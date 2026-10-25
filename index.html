@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Negocio | Sistema de Gestión & Inventario</title>
+  <meta name="description" content="Prototipo interactivo de sistema web para control de ventas, inventario, clientes deudores y reportes mensuales.">
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Layout Wrapper -->
+  <div class="app-layout">
+    
+    <!-- Sidebar Navegación -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+            <path d="M3 6h18"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <div class="brand-text">
+            <h2>Control<span>Pro</span></h2>
+            <span class="badge badge-accent">Mi Negocio</span>
+          </div>
+        </div>
+        <button class="btn-icon mobile-only" id="btn-close-sidebar" aria-label="Cerrar menú">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <p class="nav-section-title">PRINCIPAL</p>
+        <button class="nav-item active" data-view="dashboard">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          <span>Panel General</span>
+        </button>
+        <button class="nav-item" data-view="ventas">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+          <span>Ventas & POS</span>
+          <span class="nav-counter" id="badge-total-ventas">0</span>
+        </button>
+        <button class="nav-item" data-view="inventario">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+          <span>Inventario / Stock</span>
+          <span class="nav-counter alert" id="badge-stock-bajo">0</span>
+        </button>
+        <button class="nav-item" data-view="deudores">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M19 11v6"/><path d="M22 14h-6"/></svg>
+          <span>¿Quién me debe?</span>
+          <span class="nav-counter warning" id="badge-deudores">0</span>
+        </button>
+        <button class="nav-item" data-view="reportes">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>
+          <span>Ventas del Mes</span>
+        </button>
+
+        <p class="nav-section-title">CONFIGURACIÓN</p>
+        <button class="nav-item" id="btn-theme-toggle">
+          <svg id="theme-icon-moon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          <svg id="theme-icon-sun" class="hidden" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <span id="theme-label">Modo Oscuro</span>
+        </button>
+        <button class="nav-item secondary" id="btn-reset-demo" title="Restablecer datos de prueba para practicar">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+          <span>Reiniciar Demo</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar">N</div>
+          <div class="user-info">
+            <p class="user-name">Ninoska</p>
+            <p class="user-role">Administradora</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Fondo oscurecido para versión móvil -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-icon mobile-only" id="btn-open-sidebar" aria-label="Abrir menú">
+            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          </button>
+          <div>
+            <h1 class="page-title" id="current-view-title">Panel General</h1>
+            <p class="page-subtitle" id="current-view-subtitle">Resumen en tiempo real del estado de tu negocio</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-primary" id="btn-top-nueva-venta">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>+ Nueva Venta</span>
+          </button>
+          <button class="btn btn-secondary" id="btn-top-nuevo-producto">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>+ Producto</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Vistas Interactivas (SPA) -->
+
+      <!-- 1. VISTA DASHBOARD -->
+      <section class="view-section active" id="view-dashboard">
+        
+        <!-- Tarjetas KPI -->
+        <div class="kpi-grid">
+          
+          <div class="kpi-card card-ventas">
+            <div class="kpi-header">
+              <span class="kpi-title">Ventas de este Mes</span>
+              <div class="kpi-icon icon-success">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpi-ventas-mes">$0.00</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend positive" id="kpi-ventas-count">0 ventas este mes</span>
+              <span class="kpi-subtext">Actualizado hoy</span>
+            </div>
+          </div>
+
+          <div class="kpi-card card-ganancia">
+            <div class="kpi-header">
+              <span class="kpi-title">Ganancia Estimada</span>
+              <div class="kpi-icon icon-primary">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpi-ganancia-mes">$0.00</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend positive">Margen bruto prom. 38%</span>
+              <span class="kpi-subtext">Sobre costo compra</span>
+            </div>
+          </div>
+
+          <div class="kpi-card card-deudores">
+            <div class="kpi-header">
+              <span class="kpi-title">Cuentas por Cobrar</span>
+              <div class="kpi-icon icon-danger">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value text-danger" id="kpi-por-cobrar">$0.00</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend negative" id="kpi-deudores-count">0 clientes deben</span>
+              <button class="link-btn" data-go="deudores">Ver quiénes son →</button>
+            </div>
+          </div>
+
+          <div class="kpi-card card-inventario">
+            <div class="kpi-header">
+              <span class="kpi-title">Productos en Stock</span>
+              <div class="kpi-icon icon-warning">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpi-stock-total">0 unidades</div>
+            <div class="kpi-footer">
+              <span class="badge badge-warning" id="kpi-stock-alert">0 por agotarse</span>
+              <button class="link-btn" data-go="inventario">Revisar stock →</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Gráfico y Resumen de Métricas -->
+        <div class="grid-2col">
+          <!-- Gráfica de Ventas Recientes -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Comportamiento de Ventas (Últimos Días)</h3>
+                <p class="card-subtitle">Visualiza el flujo de ingresos diario</p>
+              </div>
+              <div class="pill-group">
+                <span class="badge badge-success">Ventas al contado y crédito</span>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="salesChart" width="600" height="260"></canvas>
+            </div>
+          </div>
+
+          <!-- Acceso Rápido: Clientes que deben -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">⚠️ Deudas Pendientes Urgentes</h3>
+                <p class="card-subtitle">Clientes con saldos por liquidar</p>
+              </div>
+              <button class="btn btn-sm btn-outline" data-go="deudores">Ver todos</button>
+            </div>
+            <div class="debtors-quick-list" id="dashboard-debtors-list">
+              <!-- Renderizado dinámicamente -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Últimas Ventas Realizadas -->
+        <div class="card mt-6">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Últimas Ventas Registradas</h3>
+              <p class="card-subtitle">Movimientos más recientes en tu negocio</p>
+            </div>
+            <button class="btn btn-sm btn-primary" id="btn-dash-nueva-venta">+ Registrar Venta</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Ticket</th>
+                  <th>Fecha & Hora</th>
+                  <th>Cliente</th>
+                  <th>Productos</th>
+                  <th>Pago</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-recent-sales">
+                <!-- Se llena dinámicamente con JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 2. VISTA VENTAS / POS -->
+      <section class="view-section" id="view-ventas">
+        
+        <div class="section-actions-bar">
+          <div class="search-filter-wrapper">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="search-sales-input" placeholder="Buscar por cliente o número de ticket...">
+            </div>
+            <select id="filter-sales-method" class="form-select">
+              <option value="todos">Todos los métodos de pago</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Tarjeta">Tarjeta</option>
+              <option value="Crédito">A Crédito (Deuda)</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary" id="btn-abrir-modal-venta">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>+ Registrar Nueva Venta</span>
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="table-responsive">
+            <table class="data-table" id="tabla-ventas-completa">
+              <thead>
+                <tr>
+                  <th>N° Ticket</th>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>Detalle Items</th>
+                  <th>Método Pago</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="sales-table-body">
+                <!-- Filas renderizadas con JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 3. VISTA INVENTARIO -->
+      <section class="view-section" id="view-inventario">
+        
+        <div class="section-actions-bar">
+          <div class="search-filter-wrapper">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="search-product-input" placeholder="Buscar producto o código...">
+            </div>
+            <select id="filter-product-category" class="form-select">
+              <option value="todas">Todas las categorías</option>
+            </select>
+            <label class="checkbox-filter">
+              <input type="checkbox" id="filter-only-low-stock">
+              <span>Solo stock bajo / agotados</span>
+            </label>
+          </div>
+
+          <button class="btn btn-primary" id="btn-abrir-modal-producto">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>+ Agregar Producto</span>
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="table-responsive">
+            <table class="data-table" id="tabla-inventario">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Producto</th>
+                  <th>Categoría</th>
+                  <th>Precio Compra</th>
+                  <th>Precio Venta</th>
+                  <th>Margen</th>
+                  <th>Stock Actual</th>
+                  <th>Estado</th>
+                  <th>Ajuste Rápido</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="inventory-table-body">
+                <!-- Se llena con JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 4. VISTA DEUDORES ("¿Quién me debe?") -->
+      <section class="view-section" id="view-deudores">
+        
+        <div class="debtors-summary-cards">
+          <div class="card mini-stat text-center">
+            <p class="stat-lbl">Total por Cobrar</p>
+            <p class="stat-num text-danger" id="deudores-total-monto">$0.00</p>
+          </div>
+          <div class="card mini-stat text-center">
+            <p class="stat-lbl">Clientes Deudores</p>
+            <p class="stat-num" id="deudores-total-personas">0</p>
+          </div>
+          <div class="card mini-stat text-center">
+            <p class="stat-lbl">Total Recuperado / Abonos</p>
+            <p class="stat-num text-success" id="deudores-total-cobrado">$0.00</p>
+          </div>
+        </div>
+
+        <div class="section-actions-bar mt-4">
+          <div class="search-filter-wrapper">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="search-debtors-input" placeholder="Buscar cliente por nombre o teléfono...">
+            </div>
+            <select id="filter-debtor-status" class="form-select">
+              <option value="todos">Todos los estados</option>
+              <option value="Pendiente">Pendiente de pago</option>
+              <option value="Liquidado">Totalmente pagado</option>
+            </select>
+          </div>
+
+          <button class="btn btn-secondary" id="btn-nueva-deuda-directa">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>+ Registrar Cuenta / Fiado</span>
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Teléfono / Contacto</th>
+                  <th>Concepto / Venta</th>
+                  <th>Fecha Deuda</th>
+                  <th>Total Deuda</th>
+                  <th>Abonado</th>
+                  <th>Saldo Pendiente</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="debtors-table-body">
+                <!-- Se llena con JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 5. VISTA REPORTES ("¿Cuánto vendo en el mes?") -->
+      <section class="view-section" id="view-reportes">
+        
+        <div class="report-filter-header card">
+          <div class="report-filter-left">
+            <h3>Resumen Financiero del Mes</h3>
+            <p class="text-muted">Consulta el desglose de rendimiento, ingresos netos y top productos.</p>
+          </div>
+          <div class="report-filter-right">
+            <label for="report-month-select" class="font-medium">Mes a consultar:</label>
+            <select id="report-month-select" class="form-select">
+              <option value="actual">Mes en curso (Octubre 2026)</option>
+              <option value="anterior">Mes anterior (Septiembre 2026)</option>
+            </select>
+            <button class="btn btn-outline" id="btn-imprimir-reporte">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+              <span>Imprimir / PDF</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid-3col mt-6">
+          <div class="card stat-box">
+            <span class="stat-box-label">Total Facturado</span>
+            <span class="stat-box-val text-primary" id="rep-total-ventas">$0.00</span>
+            <span class="stat-box-sub">Total de ventas brutas</span>
+          </div>
+          <div class="card stat-box">
+            <span class="stat-box-label">Costo de Mercancía</span>
+            <span class="stat-box-val text-muted" id="rep-costo-mercancia">$0.00</span>
+            <span class="stat-box-sub">Costo de adquisición</span>
+          </div>
+          <div class="card stat-box">
+            <span class="stat-box-label">Ganancia Neta</span>
+            <span class="stat-box-val text-success" id="rep-ganancia-neta">$0.00</span>
+            <span class="stat-box-sub">Utilidad estimada</span>
+          </div>
+        </div>
+
+        <div class="grid-2col mt-6">
+          <!-- Top Productos más vendidos -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">🏆 Top Productos Más Vendidos</h3>
+            </div>
+            <div class="top-products-list" id="rep-top-products">
+              <!-- JS -->
+            </div>
+          </div>
+
+          <!-- Métodos de pago desglose -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">💳 Ventas por Método de Pago</h3>
+            </div>
+            <div class="payment-methods-breakdown" id="rep-payment-methods">
+              <!-- JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==================== MODALES NATIVOS (<dialog>) ==================== -->
+
+  <!-- Modal: Registrar Nueva Venta -->
+  <dialog id="modal-nueva-venta" closedby="any" aria-labelledby="modal-venta-title" class="custom-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-venta-title">🛒 Registrar Nueva Venta</h2>
+        <button class="btn-icon" data-close-modal="modal-nueva-venta" aria-label="Cerrar ventana">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="form-nueva-venta" class="modal-body">
+        
+        <!-- Selección de Producto -->
+        <div class="form-group">
+          <label for="pos-producto-select">Selecciona el Producto <span class="req">*</span></label>
+          <select id="pos-producto-select" class="form-control" required>
+            <option value="">-- Elige un producto del inventario --</option>
+          </select>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="pos-cantidad">Cantidad <span class="req">*</span></label>
+            <input type="number" id="pos-cantidad" class="form-control" min="1" value="1" required>
+            <small class="form-hint" id="pos-stock-disponible-hint">Stock disponible: -</small>
+          </div>
+          <div class="form-group">
+            <label for="pos-precio-unitario">Precio Unitario ($)</label>
+            <input type="number" id="pos-precio-unitario" class="form-control" step="0.01" readonly>
+          </div>
+        </div>
+
+        <!-- Forma de Pago -->
+        <div class="form-group">
+          <label for="pos-metodo-pago">Forma de Pago <span class="req">*</span></label>
+          <select id="pos-metodo-pago" class="form-control" required>
+            <option value="Efectivo">Efectivo (De contado)</option>
+            <option value="Transferencia">Transferencia bancaria / Pago móvil</option>
+            <option value="Tarjeta">Tarjeta Débito / Crédito</option>
+            <option value="Crédito">A Crédito (Me queda debiendo / Fiado)</option>
+          </select>
+        </div>
+
+        <!-- Información del Cliente (Obligatorio si es a crédito) -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="pos-cliente-nombre">Nombre del Cliente <span id="pos-req-cliente" class="req hidden">*</span></label>
+            <input type="text" id="pos-cliente-nombre" class="form-control" placeholder="Ej. Juan Pérez (o Cliente General)">
+          </div>
+          <div class="form-group">
+            <label for="pos-cliente-telefono">Teléfono / WhatsApp</label>
+            <input type="tel" id="pos-cliente-telefono" class="form-control" placeholder="Ej. +52 123 456 7890">
+          </div>
+        </div>
+
+        <div class="alert-box alert-warning hidden" id="pos-credito-aviso">
+          ⚠️ <strong>Venta a crédito:</strong> Se registrará automáticamente en la sección <em>"¿Quién me debe?"</em> para que lleves el control de cobros.
+        </div>
+
+        <!-- Resumen Total -->
+        <div class="pos-total-box">
+          <span>Total a Pagar:</span>
+          <strong id="pos-total-calculado">$0.00</strong>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="modal-nueva-venta">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-guardar-venta">Confirmar Venta</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Modal: Agregar / Editar Producto -->
+  <dialog id="modal-producto" closedby="any" aria-labelledby="modal-prod-title" class="custom-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-prod-title">📦 Agregar Nuevo Producto</h2>
+        <button class="btn-icon" data-close-modal="modal-producto" aria-label="Cerrar ventana">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="form-producto" class="modal-body">
+        <input type="hidden" id="prod-id" value="">
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="prod-codigo">Código / SKU <span class="req">*</span></label>
+            <input type="text" id="prod-codigo" class="form-control" placeholder="Ej. ART-001" required>
+          </div>
+          <div class="form-group">
+            <label for="prod-categoria">Categoría <span class="req">*</span></label>
+            <input type="text" id="prod-categoria" class="form-control" list="lista-categorias-sugeridas" placeholder="Ej. Ropa, Calzado, Abarrotes..." required>
+            <datalist id="lista-categorias-sugeridas">
+              <option value="Ropa"></option>
+              <option value="Calzado"></option>
+              <option value="Accesorios"></option>
+              <option value="Cosméticos"></option>
+              <option value="Abarrotes"></option>
+            </datalist>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="prod-nombre">Nombre del Producto <span class="req">*</span></label>
+          <input type="text" id="prod-nombre" class="form-control" placeholder="Ej. Blusa de Seda Estampada" required>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="prod-precio-compra">Precio de Compra / Costo ($) <span class="req">*</span></label>
+            <input type="number" id="prod-precio-compra" class="form-control" step="0.01" min="0" placeholder="0.00" required>
+            <small class="form-hint">Lo que te costó a ti</small>
+          </div>
+          <div class="form-group">
+            <label for="prod-precio-venta">Precio de Venta al Público ($) <span class="req">*</span></label>
+            <input type="number" id="prod-precio-venta" class="form-control" step="0.01" min="0" placeholder="0.00" required>
+            <small class="form-hint">Precio en el que lo vendes</small>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="prod-stock">Cantidad en Stock (Inventario) <span class="req">*</span></label>
+            <input type="number" id="prod-stock" class="form-control" min="0" value="10" required>
+          </div>
+          <div class="form-group">
+            <label for="prod-stock-min">Alerta Stock Mínimo</label>
+            <input type="number" id="prod-stock-min" class="form-control" min="1" value="3">
+            <small class="form-hint">Avisar cuando queden pocas piezas</small>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="modal-producto">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-guardar-producto">Guardar Producto</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Modal: Registrar Abono a Deuda -->
+  <dialog id="modal-abono" closedby="any" aria-labelledby="modal-abono-title" class="custom-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-abono-title">💰 Registrar Abono de Cliente</h2>
+        <button class="btn-icon" data-close-modal="modal-abono" aria-label="Cerrar ventana">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="form-abono" class="modal-body">
+        <input type="hidden" id="abono-deuda-id" value="">
+
+        <div class="debtor-detail-card">
+          <div class="d-flex justify-between">
+            <strong id="abono-cliente-nombre">Cliente</strong>
+            <span class="badge badge-danger" id="abono-saldo-badge">Debe: $0.00</span>
+          </div>
+          <p class="text-sm text-muted mt-1" id="abono-concepto-desc">Concepto de compra</p>
+        </div>
+
+        <div class="form-group mt-3">
+          <label for="abono-monto">Monto que está pagando hoy ($) <span class="req">*</span></label>
+          <input type="number" id="abono-monto" class="form-control input-lg" step="0.01" min="1" placeholder="0.00" required>
+        </div>
+
+        <div class="form-group">
+          <label for="abono-metodo">Forma de Pago del Abono</label>
+          <select id="abono-metodo" class="form-control">
+            <option value="Efectivo">Efectivo</option>
+            <option value="Transferencia">Transferencia bancaria</option>
+            <option value="Tarjeta">Tarjeta Débito / Crédito</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="modal-abono">Cancelar</button>
+          <button type="submit" class="btn btn-success">Registrar Pago / Abono</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Modal: Registrar Cuenta por Cobrar Directa (Fiado sin pasar por carrito) -->
+  <dialog id="modal-nueva-deuda" closedby="any" aria-labelledby="modal-deuda-title" class="custom-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-deuda-title">📝 Registrar Nueva Deuda / Fiado</h2>
+        <button class="btn-icon" data-close-modal="modal-nueva-deuda" aria-label="Cerrar ventana">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="form-nueva-deuda" class="modal-body">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="deuda-cliente">Nombre del Cliente <span class="req">*</span></label>
+            <input type="text" id="deuda-cliente" class="form-control" placeholder="Ej. Mariana Gómez" required>
+          </div>
+          <div class="form-group">
+            <label for="deuda-telefono">Teléfono / WhatsApp</label>
+            <input type="tel" id="deuda-telefono" class="form-control" placeholder="Ej. 555-1234">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="deuda-concepto">Concepto / ¿Qué se llevó? <span class="req">*</span></label>
+          <input type="text" id="deuda-concepto" class="form-control" placeholder="Ej. 2 Vestidos de fiesta y 1 par de sandalias" required>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="deuda-total">Monto Total de la Deuda ($) <span class="req">*</span></label>
+            <input type="number" id="deuda-total" class="form-control" step="0.01" min="1" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label for="deuda-abono-inicial">Abono Inicial / Enganche ($)</label>
+            <input type="number" id="deuda-abono-inicial" class="form-control" step="0.01" min="0" value="0">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="modal-nueva-deuda">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Registrar en Lista de Deudores</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Modal: Ver Ticket de Venta -->
+  <dialog id="modal-ticket" closedby="any" aria-labelledby="modal-ticket-title" class="custom-modal">
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h2 id="modal-ticket-title">🧾 Comprobante de Venta</h2>
+        <button class="btn-icon" data-close-modal="modal-ticket" aria-label="Cerrar ventana">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="ticket-body" id="ticket-printable-content">
+        <div class="ticket-header">
+          <h3>CONTROL PRO</h3>
+          <p>Sistema de Gestión de Negocio</p>
+          <p class="ticket-meta" id="ticket-numero">Ticket #0001</p>
+          <p class="ticket-meta" id="ticket-fecha">Fecha: --/--/----</p>
+        </div>
+
+        <div class="ticket-divider"></div>
+
+        <div class="ticket-info">
+          <p><strong>Cliente:</strong> <span id="ticket-cliente">Público General</span></p>
+          <p><strong>Pago:</strong> <span id="ticket-metodo">Efectivo</span></p>
+        </div>
+
+        <div class="ticket-divider"></div>
+
+        <div class="ticket-items" id="ticket-items-list">
+          <!-- Items del ticket -->
+        </div>
+
+        <div class="ticket-divider"></div>
+
+        <div class="ticket-totals">
+          <div class="ticket-row total">
+            <span>TOTAL:</span>
+            <span id="ticket-total-val">$0.00</span>
+          </div>
+          <div class="ticket-row status">
+            <span>Estado:</span>
+            <span id="ticket-estado-val" class="badge badge-success">Pagado</span>
+          </div>
+        </div>
+
+        <div class="ticket-footer">
+          <p>¡Gracias por tu compra y preferencia!</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal="modal-ticket">Cerrar</button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">Imprimir Ticket</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Toast Container para notificaciones amigables -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- Script Principal -->
+  <script src="app.js"></script>
+</body>
+</html>
